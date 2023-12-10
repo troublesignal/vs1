@@ -7,7 +7,7 @@ import { connect } from 'cloudflare:sockets';
 let userID = 'f2298581-16d6-4c42-907d-3db31b64c38a';
 
 const proxyIPs = ['cdn-all.xn--b6gac.eu.org', 'cdn.xn--b6gac.eu.org', 'cdn-b100.xn--b6gac.eu.org', 'edgetunnel.anycast.eu.org', 'cdn.anycast.eu.org'];
-let proxyIP = '103.21.247.238';
+let proxyIP = '192.230.103.177';
 
 
 if (!isValidUUID(userID)) {
