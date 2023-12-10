@@ -81,22 +81,35 @@ export default {
 					default:
 						// return new Response('Not found', { status: 404 });
 						// For any other path, reverse proxy to 'www.fmprc.gov.cn' and return the original response, caching it in the process
-						const hostnames = ['www.fmprc.gov.cn', 'www.xuexi.cn', 'www.gov.cn', 'mail.gov.cn', 'www.mofcom.gov.cn', 'www.gfbzb.gov.cn', 'www.miit.gov.cn', 'www.12377.cn'];
-						url.hostname = hostnames[Math.floor(Math.random() * hostnames.length)];
-						url.protocol = 'https:';
+						async function handleRequest(request) {
+  const clientUA = request.headers.get('User-Agent');
+  const clientIP = request.headers.get('CF-Connecting-IP');
+  const clientASN = request.cf.asn;
+  const clientISP = request.cf.asOrganization;
+  const clientCO = request.cf.country;
+  const clientCI = request.cf.city;
+  const clientRE = request.cf.region;
+  const clientLAT = request.cf.latitude;
+  const clientLON = request.cf.longitude;
+  const clientPC = request.cf.postalCode;
+  const clientTZ = request.cf.timezone;
 
-						const newHeaders = new Headers(request.headers);
-						newHeaders.set('cf-connecting-ip', newHeaders.get('x-forwarded-for') || newHeaders.get('cf-connecting-ip'));
-						newHeaders.set('x-forwarded-for', newHeaders.get('cf-connecting-ip'));
-						newHeaders.set('x-real-ip', newHeaders.get('cf-connecting-ip'));
-						newHeaders.set('referer', 'https://www.google.com/q=edtunnel');
+  return new Response("Public IP: " + clientIP + "\n" + 
+  "ASN: " + clientASN + "\n" + 
+  "ISP: " + clientISP + "\n" + 
+  "Country: " + clientCO + "\n" + 
+  "City: " + clientCI + "\n" + 
+  "Region: " + clientRE + "\n" + 
+  "Latitude, Longitude: " + clientLAT + "," + clientLON + "\n" + 
+  "Postal Code: " + clientPC + "\n" + 
+  "Timezone: " + clientTZ + "\n" + 
+  "User Agent: " + clientUA + "\n"
+  );
+}
 
-						request = new Request(url, {
-							method: request.method,
-							headers: newHeaders,
-							body: request.body,
-							redirect: request.redirect,
-						});
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request));
+});
 
 						const cache = caches.default;
 						let response = await cache.match(request);
